@@ -67,6 +67,14 @@ type Config struct {
 	UseDualStackEndpoint           bool
 	UseFIPSEndpoint                bool
 	UserAgent                      awsbase.UserAgentProducts
+
+	// CredentialsProvider, when set, replaces the credentials provider
+	// resolved from the rest of this configuration in the aws.Config that the
+	// AWS API clients are built from. It lets an embedding program, such as
+	// the Crossplane AWS provider, supply a self-refreshing provider so that
+	// long-running operations like resource waiters do not fail when the
+	// temporary credentials resolved at configuration time expire.
+	CredentialsProvider aws.CredentialsProvider
 }
 
 // ConfigureProvider configures the provided provider Meta (instance data).
@@ -168,6 +176,10 @@ func (c *Config) ConfigureProvider(ctx context.Context, client *AWSClient) (*AWS
 		}
 	}
 	c.Region = cfg.Region
+
+	if c.CredentialsProvider != nil {
+		cfg.Credentials = c.CredentialsProvider
+	}
 
 	// Handle custom S3 regions for S3-compatible storage (Ceph, MinIO, etc.)
 	// AWS SDK v2 validates regions strictly, but S3-compatible storage may use non-standard region strings
