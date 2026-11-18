@@ -68,12 +68,8 @@ type Config struct {
 	UseFIPSEndpoint                bool
 	UserAgent                      awsbase.UserAgentProducts
 
-	// CredentialsProvider, when set, replaces the credentials provider
-	// resolved from the rest of this configuration in the aws.Config that the
-	// AWS API clients are built from. It lets an embedding program, such as
-	// the Crossplane AWS provider, supply a self-refreshing provider so that
-	// long-running operations like resource waiters do not fail when the
-	// temporary credentials resolved at configuration time expire.
+	// CredentialsProvider, when set, overrides the resolved credentials
+	// provider, e.g. to supply one that refreshes temporary credentials.
 	CredentialsProvider aws.CredentialsProvider
 }
 
